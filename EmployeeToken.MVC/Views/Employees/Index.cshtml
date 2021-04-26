@@ -1,0 +1,31 @@
+﻿@model IEnumerable<EmployeeToken.MVC.ViewModels.EmployeeViewModel>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="input-group">
+            @using (Ajax.BeginForm("Search", "Employees", new AjaxOptions { UpdateTargetId = "EmployeeTbl", InsertionMode = InsertionMode.Replace, HttpMethod = "GET" }))
+            {
+                <label class="control-label">Search Employee </label>
+                <input type="search" id="TxtSearch" name="Search" />
+                <button type="submit" id="BtnSearch" class="btn btn-success">Search</button>
+            }
+        </div>
+    </div>
+</div>
+
+<h2> @ViewBag.Heading </h2>
+
+<div id="EmployeeTbl">
+    @Html.Partial("_Employee")
+</div>
+
+@Html.ValidationSummary(true, null, new { @class = "text-danger" })
+
+@section Scripts{
+
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+}
