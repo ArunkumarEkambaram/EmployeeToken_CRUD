@@ -4,23 +4,33 @@
     ViewBag.Title = "Index";
 }
 
+@section css{
+    <link href="~/Content/font-awesome.css" rel="stylesheet" />
+}
 <div class="row">
     <div class="col-md-5">
-        <div class="input-group">
-            @using (Ajax.BeginForm("Search", "Employees", new AjaxOptions { UpdateTargetId = "EmployeeTbl", InsertionMode = InsertionMode.Replace, HttpMethod = "GET" }))
-            {
-                <label class="control-label">Search Employee </label>
-                <input type="search" id="TxtSearch" name="Search" />
-                <button type="submit" id="BtnSearch" class="btn btn-success">Search</button>
-            }
+
+        @using (Ajax.BeginForm("Search", "Employees", new AjaxOptions { UpdateTargetId = "EmployeeTbl", InsertionMode = InsertionMode.Replace, HttpMethod = "GET" }))
+        {
+            <div class="input-group">
+                <label class="col-form-label mr-2 font-weight-bold">Search Employee </label>
+                <input type="search" id="TxtSearch" name="Search" class="form-control mr-2" />
+                <button type="submit" id="BtnSearch" class="btn btn-info fa fa-search"> Search</button>
+            </div>
+        }
+    </div>
+    <div class="col-md-5 text-right">
+        @Html.ActionLink(" Add New Employee", "AddEditEmployee", "Employees", null, new { @id = "BtnAdd", @class = "fa fa-plus-square btn btn-outline-success" })
+    </div>
+
+</div>
+<hr />
+<div class="row">
+    <div class="col-md-10">
+        <div id="EmployeeTbl">
+            @Html.Partial("_Employee")
         </div>
     </div>
-</div>
-
-<h2> @ViewBag.Heading </h2>
-
-<div id="EmployeeTbl">
-    @Html.Partial("_Employee")
 </div>
 
 @Html.ValidationSummary(true, null, new { @class = "text-danger" })

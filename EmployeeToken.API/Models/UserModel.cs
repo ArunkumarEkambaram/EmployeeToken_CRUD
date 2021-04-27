@@ -12,6 +12,9 @@ namespace EmployeeToken.API.Models
         [EmailAddress]
         public string Email { get; set; }
 
+       // [Required]
+        public string Name { get; set; }
+
         [Required]
         [DataType(DataType.Password)]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must atleast 6 character length")]

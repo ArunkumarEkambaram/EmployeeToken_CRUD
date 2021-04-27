@@ -25,7 +25,7 @@ namespace EmployeeToken.MVC.Controllers
         {
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -37,9 +37,9 @@ namespace EmployeeToken.MVC.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -72,12 +72,10 @@ namespace EmployeeToken.MVC.Controllers
         //New Code
         public ActionResult Login(LoginViewModel model, string returnUrl)
         {
-
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
-            //var getTokenUrl = string.Format(ApiEndPoints.AuthorisationTokenEndpoint.Post.Token, ConfigurationManager.AppSettings["ApiBaseUri"]);
 
             using (HttpClient httpClient = new HttpClient())
             {
@@ -90,13 +88,16 @@ namespace EmployeeToken.MVC.Controllers
                 });
 
                 HttpResponseMessage result = httpClient.PostAsync("token", content).Result;
+                if (result.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest, "Invalid details");
+                }
 
                 string resultContent = result.Content.ReadAsStringAsync().Result;
 
                 var token = JsonConvert.DeserializeObject<Token>(resultContent);
 
                 AuthenticationProperties options = new AuthenticationProperties();
-
                 options.AllowRefresh = true;
                 options.IsPersistent = true;
                 options.ExpiresUtc = DateTime.UtcNow.AddSeconds(int.Parse(token.ExpiresIn));
@@ -106,14 +107,14 @@ namespace EmployeeToken.MVC.Controllers
                     new Claim(ClaimTypes.Name, model.UserName),
                     new Claim("AcessToken", token.AccessToken)
                 };
-              
+
                 var identity = new ClaimsIdentity(claims, "ApplicationCookie");
-              
+
                 AuthenticationManager.SignIn(new AuthenticationProperties
                 {
                     IsPersistent = model.RememberMe
                 }, identity);
-                
+
                 Request.GetOwinContext().Authentication.SignIn(options, identity);
 
             }
@@ -150,7 +151,7 @@ namespace EmployeeToken.MVC.Controllers
             // If a user enters incorrect codes for a specified amount of time then the user account 
             // will be locked out for a specified amount of time. 
             // You can configure the account lockout settings in IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
+            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -185,8 +186,8 @@ namespace EmployeeToken.MVC.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                   // await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+                    // await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
+
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);

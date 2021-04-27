@@ -12,7 +12,7 @@ using System.Web.Http.Description;
 using EmployeeToken.API.Models;
 
 namespace EmployeeToken.API.Controllers
-{    
+{
     [Authorize]
     [RoutePrefix("api/Employees")]
     public class EmployeesController : ApiController
@@ -26,8 +26,8 @@ namespace EmployeeToken.API.Controllers
             return db.Employees;
         }
 
-        // GET: api/Employees/5
-        [Route("GetEmployeeBy/{id}")]
+        // GET: api/Employees/5        
+        [Route("GetEmployeeBy/{id}", Name = "GetEmployeeBy")]
         [ResponseType(typeof(Employee))]
         public async Task<IHttpActionResult> GetEmployee(int id)
         {
@@ -98,7 +98,8 @@ namespace EmployeeToken.API.Controllers
             db.Employees.Add(employee);
             await db.SaveChangesAsync();
 
-            return CreatedAtRoute("DefaultApi", new { id = employee.Id }, employee);
+             return CreatedAtRoute("GetEmployeeBy", new { id = employee.Id }, employee);
+            //return CreatedAtRoute("DefaultApi",)
         }
 
         // DELETE: api/Employees/5
