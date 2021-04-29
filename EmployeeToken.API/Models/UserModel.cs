@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace EmployeeToken.API.Models
 {
-    public class UserModel
+    public class UserModel //: IdentityUser
     {
         [Required]
         [EmailAddress]
         public string Email { get; set; }
 
-       // [Required]
-        public string Name { get; set; }
+        //[Required]
+        public string Role { get; set; }
 
         [Required]
         [DataType(DataType.Password)]

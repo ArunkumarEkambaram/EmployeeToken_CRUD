@@ -12,6 +12,8 @@ namespace EmployeeToken.API.Models
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class ProjectsEntities : DbContext
     {
@@ -26,5 +28,30 @@ namespace EmployeeToken.API.Models
         }
     
         public virtual DbSet<Employee> Employees { get; set; }
+    
+        public virtual int usp_AddNewEmployee(string name, string position, string location, Nullable<System.DateTime> birthDate, Nullable<decimal> salary)
+        {
+            var nameParameter = name != null ?
+                new ObjectParameter("Name", name) :
+                new ObjectParameter("Name", typeof(string));
+    
+            var positionParameter = position != null ?
+                new ObjectParameter("Position", position) :
+                new ObjectParameter("Position", typeof(string));
+    
+            var locationParameter = location != null ?
+                new ObjectParameter("Location", location) :
+                new ObjectParameter("Location", typeof(string));
+    
+            var birthDateParameter = birthDate.HasValue ?
+                new ObjectParameter("BirthDate", birthDate) :
+                new ObjectParameter("BirthDate", typeof(System.DateTime));
+    
+            var salaryParameter = salary.HasValue ?
+                new ObjectParameter("Salary", salary) :
+                new ObjectParameter("Salary", typeof(decimal));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("usp_AddNewEmployee", nameParameter, positionParameter, locationParameter, birthDateParameter, salaryParameter);
+        }
     }
 }

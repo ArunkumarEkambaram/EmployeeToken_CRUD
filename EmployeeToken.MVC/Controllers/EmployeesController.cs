@@ -24,6 +24,7 @@ namespace EmployeeToken.MVC.Controllers
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
         }
 
+       
         public async Task<bool> GetAll()
         {
             //Apply token to bearer authorization
@@ -34,7 +35,7 @@ namespace EmployeeToken.MVC.Controllers
 
             if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                Request.GetOwinContext().Authentication.SignOut(Microsoft.AspNet.Identity.DefaultAuthenticationTypes.ApplicationCookie);                
+                Request.GetOwinContext().Authentication.SignOut(Microsoft.AspNet.Identity.DefaultAuthenticationTypes.ApplicationCookie);
             }
 
             if (result.IsSuccessStatusCode)
@@ -44,7 +45,7 @@ namespace EmployeeToken.MVC.Controllers
             }
             return false;
         }
-
+        
         // GET: Employees
         public async Task<ActionResult> Index()
         {
@@ -57,6 +58,7 @@ namespace EmployeeToken.MVC.Controllers
             return View();
         }
 
+      // [Authorize(Roles = "Employee")]
         public async Task<ActionResult> Search(string search)
         {
             //Apply token to bearer authorization
@@ -92,6 +94,7 @@ namespace EmployeeToken.MVC.Controllers
             }
         }
 
+       // [Authorize(Roles = "Admin")]
         public async Task<ActionResult> AddEditEmployee(int id = 0)
         {
             if (id != 0)
@@ -107,15 +110,15 @@ namespace EmployeeToken.MVC.Controllers
                 {
                     var employee = await result.Content.ReadAsAsync<AddEmployeeViewModel>();
                     return View(employee);
-                }               
+                }
             }
             return View(new AddEmployeeViewModel());
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddEditEmployee(int id,AddEmployeeViewModel employee)
+        public async Task<ActionResult> AddEditEmployee(int id, AddEmployeeViewModel employee)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return View(employee);
             }
@@ -123,7 +126,7 @@ namespace EmployeeToken.MVC.Controllers
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", GlobalVariables.BearerToken);
 
             if (employee.Id == 0)
-            {                
+            {
                 var result = await client.PostAsJsonAsync("Employees/AddNew", employee);
                 if (result.StatusCode == HttpStatusCode.Unauthorized)
                 {

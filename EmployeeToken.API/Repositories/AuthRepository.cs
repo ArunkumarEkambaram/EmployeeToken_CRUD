@@ -38,16 +38,22 @@ namespace EmployeeToken.API.Repositories
             IdentityUser user = new IdentityUser
             {
                 Email = userModel.Email,
-                UserName = userModel.Email
+                UserName = userModel.Email,
             };
 
             return await userManager.CreateAsync(user, userModel.Password);
         }
 
         //Login with Existing User
-        public async Task<IdentityUser> FindUser(string userName, string password)
+        //public async Task<IdentityUser> FindUser(string userName, string password)
+        //{            
+        //    return await userManager.FindAsync(userName, password);
+        //}
+
+        public async Task<string> FindUser(string userName, string password)
         {
-            return await userManager.FindAsync(userName, password);
+            var user = await userManager.FindAsync(userName, password);
+            return userManager.GetRoles(user.Id).FirstOrDefault();
         }
 
     }

@@ -20,13 +20,15 @@ namespace EmployeeToken.API.Controllers
         private readonly ProjectsEntities db = new ProjectsEntities();
 
         // GET: api/Employees
+        //[Authorize(Roles = "Admin")]
         [Route("GetAll")]
         public IQueryable<Employee> GetEmployees()
         {
             return db.Employees;
         }
 
-        // GET: api/Employees/5        
+        // GET: api/Employees/5  
+
         [Route("GetEmployeeBy/{id}", Name = "GetEmployeeBy")]
         [ResponseType(typeof(Employee))]
         public async Task<IHttpActionResult> GetEmployee(int id)
@@ -40,6 +42,7 @@ namespace EmployeeToken.API.Controllers
             return Ok(employee);
         }
 
+        // [Authorize(Roles = "Employee")]
         [Route("SearchBy/{name}")]
         public IQueryable<Employee> GetEmployees(string name)
         {
@@ -48,6 +51,7 @@ namespace EmployeeToken.API.Controllers
         }
 
         // PUT: api/Employees/5
+        [Authorize(Roles = "Admin")]
         [Route("UpdateEmployee/{id}")]
         [HttpPut]
         [ResponseType(typeof(void))]
@@ -85,6 +89,7 @@ namespace EmployeeToken.API.Controllers
         }
 
         // POST: api/Employees
+        //[Authorize(Roles = "Admin")]
         [Route("AddNew")]
         [HttpPost]
         [ResponseType(typeof(Employee))]
@@ -95,11 +100,12 @@ namespace EmployeeToken.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.Employees.Add(employee);
+            // db.Employees.Add(employee);
+            //Map the SP from EDMX table - Right Click the table and Select Stored Procedure Mapping
+            db.usp_AddNewEmployee(employee.Name, employee.Position, employee.Location, employee.BirthDate.Value, employee.Salary.Value);
             await db.SaveChangesAsync();
 
-             return CreatedAtRoute("GetEmployeeBy", new { id = employee.Id }, employee);
-            //return CreatedAtRoute("DefaultApi",)
+            return CreatedAtRoute("GetEmployeeBy", new { id = employee.Id }, employee);
         }
 
         // DELETE: api/Employees/5

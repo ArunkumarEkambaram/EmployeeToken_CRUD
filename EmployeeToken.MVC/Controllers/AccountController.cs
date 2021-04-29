@@ -12,6 +12,7 @@ using EmployeeToken.MVC.Models;
 using System.Net.Http;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace EmployeeToken.MVC.Controllers
 {
@@ -102,9 +103,19 @@ namespace EmployeeToken.MVC.Controllers
                 options.IsPersistent = true;
                 options.ExpiresUtc = DateTime.UtcNow.AddSeconds(int.Parse(token.ExpiresIn));
 
+                //New Code
+                //var userManager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(new ApplicationDbContext()));
+                //var roleManager = Request.GetOwinContext().Get<RoleManager<IdentityRole>>();
+                //var user = userManager.FindAsync(model.UserName, model.Password);
+                //var roles = roleManager.Roles.ToList();
+                //var userRoles = user.Result.Roles.FirstOrDefault();
+                //var role = roles.FirstOrDefault(a => a.Id == userRoles.RoleId);
+                //Ends Here
+
                 var claims = new[]
                 {
                     new Claim(ClaimTypes.Name, model.UserName),
+                   // new Claim(ClaimTypes.Role,role.Name),
                     new Claim("AcessToken", token.AccessToken)
                 };
 
@@ -116,9 +127,7 @@ namespace EmployeeToken.MVC.Controllers
                 }, identity);
 
                 Request.GetOwinContext().Authentication.SignIn(options, identity);
-
             }
-
             return RedirectToAction("Index", "Home");
         }
 
@@ -186,6 +195,10 @@ namespace EmployeeToken.MVC.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    //Add Role
+                    UserManager.AddToRole(user.Id, model.Role);
+                    // await UserManager.AddClaimAsync(user.Id, new Claim(ClaimTypes.Role, model.Role));
+
                     // await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
 
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771

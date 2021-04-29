@@ -27,10 +27,14 @@ namespace EmployeeToken.API.Providers
                     context.SetError("Invalid Grant", "Username or Password is incorrect");
                     return;
                 }
+
+               // var roleName = user.Roles.Where(x => x.UserId == user.Id).FirstOrDefault();
+                
                 var identity = new ClaimsIdentity(context.Options.AuthenticationType);
                 identity.AddClaim(new Claim("User", context.UserName));
-                identity.AddClaim(new Claim("Role", "User"));
+                identity.AddClaim(new Claim("Role", user));
                 context.Validated(identity);
+
             }
         }
     }
